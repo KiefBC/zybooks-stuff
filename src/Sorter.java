@@ -14,33 +14,80 @@ public abstract class Sorter {
     // The integer array.
     protected int[] data;
 
+    protected long numSwaps;
+    protected long outerLoopExecutions;
+    protected long innerLoopExecutions;
+
     // Constructor creates a copy of the parameter array.
     protected Sorter(int[] od) {
         data = Arrays.copyOf(od, od.length);
+
+        numSwaps = 0;
+        outerLoopExecutions = 0;
+        innerLoopExecutions = 0;
     }
 
-    // Abstract method - must be implemented by subclasses. Sorts
-    // the "data" array in-place.
-    public abstract void sort();
-
+    // Abstract method - must be implemented by subclasses.
+    // Sorts the "data" array in-place.
+    protected abstract void sort();
 
     // Method to determine if "data" is sorted. Returns true if
     // the items are in sorted order, false otherwise.
-    public boolean validate() {
-        // TO-DO: check the array to see if it is in order or not!
-
-        for (int i = 0; i < data.length - 1; i++) {
-            if (data[i] > data[i + 1]) {
-                return false;
-            }
+    protected boolean validate() {
+        for (int i = 1; i < data.length; i++) {
+            if (data[i] < data[i-1]) return false;
         }
-
         return true;
     }
 
     // Returns a String representation of the "data" array.
+    @Override
     public String toString() {
         return Arrays.toString(data);
+    }
+
+    protected void checkSwaps(long expected) {
+        if (numSwaps-expected==0)
+            System.out.println("\tNumber of swaps is correct.");
+        else
+            System.out.println("\tNumber of swaps is incorrect.");
+    }
+
+    protected void checkOuterLoopExecutions(long expected) {
+        if (outerLoopExecutions-expected==0)
+            System.out.println("\tNumber of outer loop executions is correct.");
+        else
+            System.out.println("\tNumber of outer loop executions is incorrect.");
+    }
+
+    protected void checkInnerLoopExecutions(long expected) {
+        if (innerLoopExecutions-expected==0)
+            System.out.println("\tNumber of inner loop executions is correct.");
+        else
+            System.out.println("\tNumber of inner loop executions is incorrect.");
+    }
+
+    // Outputs the sort statistics to the screen.
+    protected void outputResults() {
+        if (this instanceof SelectionSorter) {
+            checkSwaps(4999);
+            checkOuterLoopExecutions(4999);
+            checkInnerLoopExecutions(12497500);
+        }
+        else if (this instanceof InsertionSorter) {
+            checkSwaps(6129299);
+            checkOuterLoopExecutions(4999);
+            checkInnerLoopExecutions(6129299);
+        }
+        else if (this instanceof BubbleSorter) {
+            checkSwaps(6129299);
+            checkOuterLoopExecutions(4882);
+            checkInnerLoopExecutions(12490597);
+        }
+
+        boolean sorted = this.validate();
+        if (sorted) System.out.print("Sort is effective.");
+        else System.out.print("Data NOT sorted.");
     }
 
     // Main program to test InsertionSorter and SelectionSorter.
@@ -56,33 +103,22 @@ public abstract class Sorter {
             data[i] = sc.nextInt();
         }
 
-
-        // Sort using Selection Sort, and time how long it takes.
+        // 1. Sort using Selection Sort, and time how long it takes.
         SelectionSorter selectionSorter = new SelectionSorter(data);
-        long start = System.currentTimeMillis();
+        System.out.println("SELECTION SORT: ");
         selectionSorter.sort();
-        long stop = System.currentTimeMillis();
+        selectionSorter.outputResults();
 
-        // Output timing and correctness of Selection Sort.
-        boolean sorted = selectionSorter.validate();
-        System.out.print("SELECTION SORT: ");
-        if (sorted) System.out.print("sorted");
-        else System.out.print("unsorted");
-        System.out.println(", " + (stop - start) + " ms.");
-
-
-        // Sort using InsertionSort, and time how long it takes.
+        // 2. Sort using InsertionSort - SlowSwap, and time how long it takes.
         InsertionSorter insertionSorter = new InsertionSorter(data);
-        start = System.currentTimeMillis();
+        System.out.println("\n\nINSERTION SORT: ");
         insertionSorter.sort();
-        stop = System.currentTimeMillis();
+        insertionSorter.outputResults();
 
-        // Output timing and correctness of Insertion Sort.
-        sorted = insertionSorter.validate();
-        System.out.print("INSERTION SORT: ");
-        if (sorted) System.out.print("sorted");
-        else System.out.print("unsorted");
-        System.out.println(", " + (stop - start) + " ms.");
+        // 3. Sort using BubbleSort
+        BubbleSorter bubbleSorter = new BubbleSorter(data);
+        System.out.println("\n\nBUBBLE SORT: ");
+        bubbleSorter.sort();
+        bubbleSorter.outputResults();
     }
-
 }

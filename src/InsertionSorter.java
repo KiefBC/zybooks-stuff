@@ -1,6 +1,5 @@
 public class InsertionSorter extends Sorter {
 
-    // Constructor just uses superclass constructor.
     public InsertionSorter(int[] od) {
         super(od);
     }
@@ -9,12 +8,10 @@ public class InsertionSorter extends Sorter {
         return data;
     }
 
-    // Method to sort the array, using Insertion Sort.
     public void sort() {
-        // TO-DO: implement the insertion sort algorithm to
-        //        sort the data array.
-
         for (int i = 1; i < data.length; i++) {
+            outerLoopExecutions++;
+
             int keyValue = data[i];
             int previousIndex = i - 1;
 
@@ -23,8 +20,10 @@ public class InsertionSorter extends Sorter {
     }
 
     private void shiftElementsRight(int previousIndex, int keyValue) {
-
         while (previousIndex >= 0 && data[previousIndex] > keyValue) {
+            innerLoopExecutions++;
+            numSwaps++;
+
             data[previousIndex + 1] = data[previousIndex];
             previousIndex--;
         }
